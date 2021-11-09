@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  statbot:
+    image: warsong.me:5000/bots/statbot
+    restart: always
+    links:
+      - clickhouse:clickhouse
+    expose:
+      - "4000"
+    ports:
+      - "4000:4000"
+    depends_on:
+      - clickhouse
+    environment:
+      - CLICKHOUSE_URL=tcp://clickhouse:9000?compress=true&debug=false
+      - DEBUG=false
+
+  clickhouse:
+    image: yandex/clickhouse-server
+    restart: always
+    expose:
+      - "8123"
+      - "9000"
+    environment:
+      - TZ=UTC
+    volumes:
+      - "$HOME/shared/clickhouse_database:/var/lib/clickhouse"
